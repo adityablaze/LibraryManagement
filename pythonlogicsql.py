@@ -4,10 +4,8 @@ from tabulate import tabulate
 
 #this is updated
 #sql connectivity
-#User = input("Enter your mysql username: ")
-#passwd = input("Enter your mysql password: ")
-User="root"
-passwd="jhumpi123"
+User = input("Enter your mysql username: ")
+passwd = input("Enter your mysql password: ")
 Host = "localhost"
 datcon = mysql.connector.connect(host=Host, user=User, password=passwd) #connector object
 cursor = datcon.cursor()                                                #cursor object                               
