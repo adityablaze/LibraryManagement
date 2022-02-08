@@ -2,7 +2,7 @@ import mysql.connector
 import datetime
 from tabulate import tabulate
 
-
+#this is updated
 #sql connectivity
 #User = input("Enter your mysql username: ")
 #passwd = input("Enter your mysql password: ")
