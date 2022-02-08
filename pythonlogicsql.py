@@ -194,7 +194,7 @@ def strupdate(srchattrbt,stuser):
      
 #searches using integers________________________________________________
 def intupdate(srchattrbt,intuser):
-     query="select * from booklist where "+srchattrb+"={}"
+     query="select * from booklist where "+srchattrbt+"={}"
      head=['BookID','Book Name','Author','Publisher','Edition','Cost','Category']
      cursor.execute(query.format(intuser))
      data = cursor.fetchall()
