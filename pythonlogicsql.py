@@ -7,13 +7,12 @@ from tabulate import tabulate
 User = input("Enter your mysql username: ")
 passwd = input("Enter your mysql password: ")
 Host = "localhost"
-datcon = mysql.connector.connect(host=Host, user=User, password=passwd) #connector object
-cursor = datcon.cursor()                                                #cursor object                               
+datcon = mysql.connector.connect(host=Host, user=User, password=passwd) #connector object                                                                           
 if datcon.is_connected():
      print("mysql connectivity successful")
 else:
      print("mysql connection unsuccessful")
-
+cursor = datcon.cursor()  #cursor object
 
 #database and tables creation
 database = "librarymanagement"
