@@ -68,7 +68,7 @@ def addbooks():
                query="insert into booklist values('{}','{}','{}','{}',{},{},'{}')"
                cursor.execute(query.format(boid,boname,auth,publ,edn,cost,cat))
                datcon.commit()
-               print("record added successfully")
+               print("\nrecord added successfully ! \n")
                ch=input("Do you want to add more books (y/n):")
                if ch in 'nN':
                     break
