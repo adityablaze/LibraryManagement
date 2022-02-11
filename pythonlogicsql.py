@@ -51,8 +51,8 @@ def MainMenu():
           
 #closing connection____________________________________________________________________________
 def closecon():
-     print("Connection closed")
      datcon.close()
+     print("Connection closed")
 
   
 #adding books__________________________________________________________________________________     
