@@ -31,7 +31,7 @@ cursor.execute(query)  #table creation query
 
 # mainmenu__________________________________________________________________________________________________________  
 def MainMenu():    
-     l = [(1,"Add Books"),(2,"Search & Update Book Detail"),(3,"Display all books"),(4,"Search & Delete Book"),(5,"EXIT")]
+     l = [(1,"Add Books"),(2,"Search & Update Book Detail"),(3,"Display all books"),(4,"Search & Delete Book"),(5,"Search & Sort"),(6,"EXIT")]
      T = tabulate(l,headers=['Sno.','LIBRARY MANAGEMENT MAIN MENU'], tablefmt='fancy_grid')
      print(T)
      choice = int(input("write the corresponding serial number for function you want to perform: "))
@@ -44,6 +44,8 @@ def MainMenu():
      elif choice == 4:
           deletebook()
      elif choice == 5:
+          search()
+     elif choice == 6:
           closecon()
 
           
@@ -87,7 +89,65 @@ def displaybooks(): # funtion to display all books
      input("press enter to load main menu......")
      MainMenu()
 
+#searching__________________________________________________________________________________________
+def search():
+     print("\nYou can search a book using the following -\n")
+     print(tabulate([('1.BookID','2.Book Name','3.Author','4.Category','5.Publisher')]))
+     I = int(input("\nEnter the sno. using which you want to search : "))
+     if I==1:
+          bookid=input("Enter BookID to search :")
+          searchst('bookid',bookid)
+          ldmenu()
+     elif I==2:
+          boname=input("Enter the Bookname or first few letters : ")
+          searchst('bookname',boname)
+          ldmenu()
+     elif I==3:
+          auth=input("Enter the Author name or first few letters : ")
+          searchst('author',auth)
+          ldmenu()
+     elif I==4:
+          categ=input("Enter the Category name or first few letters : ")
+          searchst('category',categ)
+          ldmenu()
+     elif I==5:
+          publ=input("Enter the Publisher name or first few letters : ")
+          searchst('publisher',publ)
+          ldmenu()
      
+def searchst(srchattr,stuser):
+     ch=input("do you want to sort the records (y/n) : ")
+     if ch in 'yY':
+          print("\nWhat do you want to sort about -")
+          print(tabulate([('1.Book Name','2.Author','3.Category','4.Cost','5.Publisher','6.BookID')]))
+          C=int(input("Enter your Choice to sort about : "))
+          if C==1:
+               query="select * from booklist where "+srchattr+" like '{}' order by bookname"
+          elif C==2:
+               query="select * from booklist where "+srchattr+" like '{}' order by author"
+          elif C==3:
+               query="select * from booklist where "+srchattr+" like '{}' order by Category"
+          elif C==4:
+               query="select * from booklist where "+srchattr+" like '{}' order by Cost"
+          elif C==5:
+               query="select * from booklist where "+srchattr+" like '{}' order by publisher"
+          elif C==6:
+               query="select * from booklist where "+srchattr+" like '{}' order by bookid"
+
+     elif ch in 'Nn':
+          query="select * from booklist where "+srchattr+" like '{}'"
+
+     searchstr=stuser+'%'
+     cursor.execute(query.format(searchstr))
+     data=cursor.fetchall()
+     if data==[]:
+          print("No records match your search !")
+          return
+     head=['BookID','Book Name','Author','Publisher','Edition','Cost','Category']
+     print(tabulate(data,headers=head,tablefmt='psql'))
+     print("\nThese records match your search ---")
+
+
 #delete book_______________________________________________________________________________________
 def deletebook():
      print("\nYou can search a book to delete using following -\n")
