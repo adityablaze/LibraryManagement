@@ -1,4 +1,3 @@
-from wsgiref import headers
 import mysql.connector
 import datetime
 from tabulate import tabulate
@@ -214,7 +213,6 @@ def deleteid(bookid):
      data=cursor.fetchall()
      if data==[]:
           print("No records where found! ")
-          input("press enter")
           return
      head=['BookID','Book Name','Author','Publication','Edition','Cost','Category']
      print(tabulate(data,headers=head,tablefmt='psql'))
