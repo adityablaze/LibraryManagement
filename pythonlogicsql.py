@@ -94,12 +94,53 @@ def displaybooks(): # funtion to display all books
 
 #display library stats______________________________________________________________________________
 def libstats():
-     query="select count(*) as 'Number of books in library' from booklist"
-     cursor.execute(query)
-     data=cursor.fetchall()
-     T = tabulate(data,headers=['Number of books in library'],tablefmt='psql')
-     print(T)
-     ldmenu()
+     l=[(1,'Total no. of books in library'),(2,'Number of books in each Category'),(3,'Number of books of each Publisher'),(4,'Number of books of an Author')]
+     print(tabulate(l,headers=['Sno.','Stats to display'],tablefmt='github'))
+     I=int(input("Enter the sno. for stats to see : "))
+     if I==1:
+          query="select count(*) as 'Number of books in library' from booklist"
+          cursor.execute(query)
+          data=cursor.fetchall()
+          T = tabulate(data,headers=['Total number of books in library'],tablefmt='psql')
+          print(T)
+          ch=input("Do you want to check more stats (y/n) : ")
+          if ch in 'Yy':
+               libstats()
+          else:
+               ldmenu()
+     elif I==2:
+          query="select category,count(*) from booklist group by category order by count(*) desc"
+          cursor.execute(query)
+          data=cursor.fetchall()
+          T = tabulate(data,headers=['Category','Number of books'],tablefmt='psql')
+          print(T)
+          ch=input("Do you want to check more stats (y/n) : ")
+          if ch in 'Yy':
+               libstats()
+          else:
+               ldmenu()
+     elif I==3:
+          query="select publisher,count(*) from booklist group by publisher order by count(*) desc"
+          cursor.execute(query)
+          data=cursor.fetchall()
+          T = tabulate(data,headers=['Publisher','No. of books'],tablefmt='psql')
+          print(T)
+          ch=input("Do you want to check more stats (y/n) : ")
+          if ch in 'Yy':
+               libstats()
+          else:
+               ldmenu()
+     elif I==4:
+          query="select author,count(*) from booklist group by author order by count(*) desc"
+          cursor.execute(query)
+          data=cursor.fetchall()
+          T = tabulate(data,headers=['Author','No. of books'],tablefmt='psql')
+          print(T)
+          ch=input("Do you want to check more stats (y/n) : ")
+          if ch in 'Yy':
+               libstats()
+          else:
+               ldmenu()
 
 
 #searching__________________________________________________________________________________________
