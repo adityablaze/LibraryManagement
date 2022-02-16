@@ -31,8 +31,8 @@ cursor.execute(query)  #table creation query
 
 # mainmenu__________________________________________________________________________________________________________  
 def MainMenu():    
-     l = [(1,"Add Books"),(2,"Search & Update Book Detail"),(3,"Display all books"),(4,"Search & Delete Book"),(5,"Search & Display"),(6,"Library Stats"),(7,"EXIT")]
-     T = tabulate(l,headers=['Sno.','LIBRARY MANAGEMENT MAIN MENU'], tablefmt='fancy_grid')
+     l = [(1,"Add Books",8,"Add Member"),(2,"Search & Update Book Detail"),(3,"Display all books"),(4,"Search & Delete Book"),(5,"Search & Display"),(6,"Library Stats"),(7,"EXIT")]
+     T = tabulate(l,headers=['Sno.','LIBRARY MANAGEMENT MAIN MENU','Sno.','Member functions'], tablefmt='fancy_grid')
      print(T)
      choice = int(input("write the corresponding Sno. for function you want to do : "))
      if choice == 1:
