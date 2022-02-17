@@ -28,6 +28,12 @@ Edition int,\
 Cost int,\
 Category varchar(50));"
 cursor.execute(query)  #table creation query
+query="create table if not exists memberlist \
+(memid varchar(6) PRIMARY KEY,\
+phoneno char(10) UNIQUE,\
+mname varchar(50) NOT NULL,\
+maddress varchar(60));"
+cursor.execute(query)
 
 # mainmenu__________________________________________________________________________________________________________  
 def MainMenu():    
@@ -49,6 +55,8 @@ def MainMenu():
           libstats()
      elif choice == 7:
           closecon()
+     elif choice == 8:
+          print("works !")
 
           
 #closing connection____________________________________________________________________________
@@ -56,7 +64,20 @@ def closecon():
      datcon.close()
      print("Connection closed")
 
-  
+def addmembers():
+     try :
+          while True:
+               mname=input("Enter Member name : ")
+               mphone=input("Enter phone number(10) : ")
+               
+     except:
+          print("some problem occured !") 
+          print("please make sure to enter details properly ")
+          ldmenu()
+def midgen():
+     query="select * from memberlist order by memid desc limit 1"
+     cursor.execute(query)
+
 #adding books__________________________________________________________________________________     
 def addbooks(): 
      try:
