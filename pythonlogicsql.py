@@ -30,14 +30,14 @@ Category varchar(50));"
 cursor.execute(query)  #table creation query
 query="create table if not exists memberlist \
 (memid varchar(6) PRIMARY KEY,\
-phoneno char(10) UNIQUE,\
+phoneno varchar(11) UNIQUE,\
 mname varchar(50) NOT NULL,\
 maddress varchar(60));"
 cursor.execute(query)
 
 # mainmenu__________________________________________________________________________________________________________  
 def MainMenu():    
-     l = [(1,"Add Books",8,"Add Member"),(2,"Search & Update Book Detail"),(3,"Display all books"),(4,"Search & Delete Book"),(5,"Search & Display"),(6,"Library Stats"),(7,"EXIT")]
+     l = [(1,"Add Books",8,"Add Members"),(2,"Search & Update Book Detail",9,"Display all members"),(3,"Display all books"),(4,"Search & Delete Book"),(5,"Search & Display"),(6,"Library Stats"),(7,"EXIT")]
      T = tabulate(l,headers=['Sno.','LIBRARY MANAGEMENT MAIN MENU','Sno.','Member functions'], tablefmt='fancy_grid')
      print(T)
      choice = int(input("write the corresponding Sno. for function you want to do : "))
@@ -56,7 +56,12 @@ def MainMenu():
      elif choice == 7:
           closecon()
      elif choice == 8:
-          print("works !")
+          addmembers()
+     elif choice == 9:
+          displaymembers()
+     elif choice == 20:
+          print(midgen())
+          print(boidgen())
 
           
 #closing connection____________________________________________________________________________
@@ -64,25 +69,63 @@ def closecon():
      datcon.close()
      print("Connection closed")
 
+#Adding Members________________________________________________________________________________
 def addmembers():
      try :
           while True:
                mname=input("Enter Member name : ")
                mphone=input("Enter phone number(10) : ")
-               
-     except:
+               mid=midgen()
+               addr=input("Enter you address(60) : ")
+               query="insert into memberlist values('{}','{}','{}','{}')"
+               cursor.execute(query.format(mid,mphone,mname,addr))
+               datcon.commit()
+               print("record added successfully !")
+               ch=input("do you want to enter more records(y/n) : ")
+               if ch in 'nN':
+                    break
+          ldmenu()
+
+     except Exception as e:
+          print(e)
           print("some problem occured !") 
           print("please make sure to enter details properly ")
           ldmenu()
+
+# Diplay all members__________________________________________________________________________
+def displaymembers():
+     headm=["MemberID","Phone Number","Member Name","Address"]
+     query="select * from memberlist"
+     cursor.execute(query)
+     data=cursor.fetchall()
+     if data==[]:
+          print("There are currently no members !")
+          ldmenu()
+     else:
+          T=tabulate(data,headers=headm,tablefmt='psql')
+          print(T)
+          ldmenu()
+
+# returns uinque member id based on previous id_______________________________________________ 
 def midgen():
      query="select * from memberlist order by memid desc limit 1"
      cursor.execute(query)
+     data=cursor.fetchall()
+     if data==[]:
+          return "m1"
+     lastid=data[0][0]
+     lid=""
+     for i in range(1,len(lastid)):
+          lid=lid+lastid[i]
+     lidint=int(lid)
+     lastboid="m"+str(lidint+1)
+     return lastboid
 
 #adding books__________________________________________________________________________________     
 def addbooks(): 
      try:
           while True:
-               boid=input("Enter bookid(eg:b0001):")
+               boid=boidgen()
                boname=input("Enter Book name: ")
                auth=input("Enter Author name: ")
                publ=input("Enter Publisher name: ")
@@ -103,14 +146,32 @@ def addbooks():
           print("\nplease make sure bookid needs to be unique ")
           ldmenu()
 
-          
+#returns a unique book id based on previous book id _________________________________________
+def boidgen():
+     query="select * from booklist order by bookid desc limit 1"
+     cursor.execute(query)
+     data=cursor.fetchall()
+     if data==[]:
+          return "b1"
+     lastid=data[0][0]
+     lid=""
+     for i in range(1,len(lastid)):
+          lid=lid+lastid[i]
+     lidint=int(lid)
+     lastboid="b"+str(lidint+1)
+     return lastboid
+
+     
 #display all books ____________________________________________________________________________
 def displaybooks(): # funtion to display all books
      cursor.execute("select * from booklist")
      head=['BookID','Book Name','Author','Publication','Edition','Cost','Category']
-     print(tabulate(cursor,headers=head,tablefmt='psql'))
-     input("press enter to load main menu......")
-     MainMenu()
+     data = cursor.fetchall()
+     if data==[]:
+          print("There are currently no books")
+     else:
+          print(tabulate(data,headers=head,tablefmt='psql'))
+          ldmenu()
 
 
 #display library stats______________________________________________________________________________
