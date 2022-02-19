@@ -51,7 +51,7 @@ cursor.execute(query)
 
 # mainmenu__________________________________________________________________________________________________________  
 def MainMenu():    
-     l = [(1,"Add Books",8,"Add Members",11,"Borrow a book"),(2,"Search & Update Book Detail",9,"Display all members",12,"Display Borrow history"),(3,"Display all books",10,"Delete Member",13,"Return a Books"),(4,"Search & Delete Book",'-','-',14,"Borrow history stats"),(5,"Search & Display Books"),(6,"Library Stats"),(7,"EXIT")]
+     l = [(1,"Add Books",8,"Add Members",12,"Borrow a book"),(2,"Search & Update Book Detail",9,"Display all members",13,"Display Borrow history"),(3,"Display all books",10,"Delete Member",14,"Return a Books"),(4,"Search & Delete Book",11,'Search & Display Member',15,"Borrow history stats"),(5,"Search & Display Books"),(6,"Library Stats"),(7,"EXIT")]
      T = tabulate(l,headers=['Sno.','LIBRARY MANAGEMENT MAIN MENU','Sno.','Member functions','Sno.','Borrow functions'], tablefmt='fancy_grid')
      print(T)
      choice = int(input("write the corresponding Sno. for function you want to do : "))
@@ -77,14 +77,17 @@ def MainMenu():
      elif choice == 10:
           deletemember()
      elif choice == 11:
-          borrowbook()
+          searchmembers()
           ldmenu()
      elif choice == 12:
+          borrowbook()
+          ldmenu()
+     elif choice == 13:
           displayborrow()
      elif choice == 13:
           returnbook()
           ldmenu()
-     elif choice == 14:
+     elif choice == 15:
           borrowhistats()
      elif choice == 20:
           print(midgen())
@@ -97,6 +100,45 @@ def MainMenu():
 def closecon():
      datcon.close()
      print("Connection closed")
+#searching in members___________________________________________________________________________
+
+def searchmembers():
+     l=[(1,"MemberID"),(2,"Member Name"),(3,"phone number")]
+     print(tabulate(l,headers=['Sno.','search attribute'],tablefmt='psql'))
+     I=int(input("Enter the sno. to search with : "))
+     headm=["MemberID","Phone Number","Member Name","Address"]
+     if I==1:
+          membid=input("Enter the MemberID to search : ")
+          query="select * from memberlist where memid='{}'"
+          cursor.execute(query.format(membid))
+          data=cursor.fetchall()
+          if data==[]:
+               print("No Members found with that ID--")
+               return
+          print(tabulate(data,headers=headm,tablefmt='psql'))
+          return
+     elif I==2:
+          memname=input("Enter the name (or first few letters) of member to search : ")
+          query="select * from memberlist where mname like '{}'"
+          memname=memname+'%'
+          cursor.execute(query.format(memname))
+          data=cursor.fetchall()
+          if data==[]:
+               print("No Members found !")
+               return
+          print(tabulate(data,headers=headm,tablefmt='psql'))
+          return
+     elif I==3:
+          phno=input("Enter phone number to search : ")
+          query="select * from memberlist where phoneno like '{}'"
+          cursor.execute(query.format(phno))
+          data=cursor.fetchall()
+          if data==[]:
+               print("No Members found !")
+               return
+          print(tabulate(data,headers=headm,tablefmt='psql'))
+          return
+
 
 def borrowhistats():
      l=[(1,'Display non returned borrow history'),(2,'Display borrow count grouped by each member'),(3,'Display Borrow history of a member')]
