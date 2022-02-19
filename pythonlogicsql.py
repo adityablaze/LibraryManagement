@@ -37,7 +37,7 @@ cursor.execute(query)
 
 # mainmenu__________________________________________________________________________________________________________  
 def MainMenu():    
-     l = [(1,"Add Books",8,"Add Members"),(2,"Search & Update Book Detail",9,"Display all members"),(3,"Display all books"),(4,"Search & Delete Book"),(5,"Search & Display"),(6,"Library Stats"),(7,"EXIT")]
+     l = [(1,"Add Books",8,"Add Members"),(2,"Search & Update Book Detail",9,"Display all members"),(3,"Display all books",10,"Delete Member"),(4,"Search & Delete Book"),(5,"Search & Display"),(6,"Library Stats"),(7,"EXIT")]
      T = tabulate(l,headers=['Sno.','LIBRARY MANAGEMENT MAIN MENU','Sno.','Member functions'], tablefmt='fancy_grid')
      print(T)
      choice = int(input("write the corresponding Sno. for function you want to do : "))
@@ -59,6 +59,8 @@ def MainMenu():
           addmembers()
      elif choice == 9:
           displaymembers()
+     elif choice == 10:
+          deletemember()
      elif choice == 20:
           print(midgen())
           print(boidgen())
@@ -72,22 +74,18 @@ def closecon():
 #Adding Members________________________________________________________________________________
 def addmembers():
      try :
-          while True:
-               mname=input("Enter Member name : ")
-               mphone=input("Enter phone number(10) : ")
-               mid=midgen()
-               addr=input("Enter you address(60) : ")
-               query="insert into memberlist values('{}','{}','{}','{}')"
-               cursor.execute(query.format(mid,mphone,mname,addr))
-               datcon.commit()
-               print("record added successfully !")
-               ch=input("do you want to enter more records(y/n) : ")
-               if ch in 'nN':
-                    break
+          mname=input("Enter Member name : ")
+          mphone=input("Enter phone number(10) : ")
+          mid=midgen()
+          addr=input("Enter you address(60) : ")
+          query="insert into memberlist values('{}','{}','{}','{}')"
+          cursor.execute(query.format(mid,mphone,mname,addr))
+          datcon.commit()
+          print("member added successfully !")
           ldmenu()
 
      except Exception as e:
-          print(e)
+          #print(e)
           print("some problem occured !") 
           print("please make sure to enter details properly ")
           ldmenu()
@@ -105,6 +103,62 @@ def displaymembers():
           T=tabulate(data,headers=headm,tablefmt='psql')
           print(T)
           ldmenu()
+
+#Delete Member________________________________________________________________________________
+def deletemember():
+     headm=["MemberID","Phone Number","Member Name","Address"]
+     print("You can search Member to delete using following --")
+     T=[("1.Phone number","2.Member name","3.MemberID")]
+     print(tabulate(T,tablefmt='simple'))
+     ch=int(input("Enter your choice to search : "))
+     if ch==1:
+          phno=input("Enter the phone number : ")
+          query="select * from memberlist where phoneno like '{}'"
+          phnumb=phno+'%'
+          cursor.execute(query.format(phnumb))
+          data = cursor.fetchall()
+          if data==[]:
+               print("No members found !")
+               ldmenu()
+          else:
+               print(tabulate(data,headers=headm,tablefmt='psql'))
+               print("These records match your search")
+               mid=input("Enter the memberID to delete : ")
+               deletememberid(mid)
+               ldmenu()
+     elif ch==2:
+          memname=input("Enter the member name : ")
+          query="select * from memberlist where mname like '{}'"
+          membname=memname+'%'
+          cursor.execute(query.format(membname))
+          data=cursor.fetchall()
+          if data==[]:
+               print("No members found !")
+               ldmenu()
+          else:
+               print(tabulate(data,headers=headm,tablefmt='psql'))
+               print("These records match your search")
+               mid=input("Enter the memberID to delete : ")
+               deletememberid(mid)
+               ldmenu()
+     elif ch==3:
+          mid=input("Enter memberID : ")
+          deletememberid(mid)
+          ldmenu()
+
+#for deletemember
+def deletememberid(id):
+     query="select * from memberlist where memid='{}'"
+     cursor.execute(query.format(id))
+     data=cursor.fetchall()
+     if data==[]:
+          print("No member with that id !")
+          return
+     query="delete from memberlist where memid='{}'"
+     cursor.execute(query.format(id))
+     print("member deleted successfully !")
+     datcon.commit()
+
 
 # returns uinque member id based on previous id_______________________________________________ 
 def midgen():
