@@ -1,6 +1,3 @@
-from email import header
-from tkinter import E
-from wsgiref import headers
 import mysql.connector
 import datetime
 from tabulate import tabulate
@@ -141,7 +138,7 @@ def searchmembers():
 
 
 def borrowhistats():
-     l=[(1,'Display non returned borrow history'),(2,'Display borrow count grouped by each member'),(3,'Display Borrow history of a member')]
+     l=[(1,'Display non returned borrow history'),(2,'Display borrow count of each member'),(3,'Display Borrow history of a member')]
      print(tabulate(l,headers=['sno.','Stats to display'],tablefmt='simple'))
      I=int(input("\nEnter the choice to display : "))
      if I==1:
