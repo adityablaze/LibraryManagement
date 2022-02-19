@@ -1,3 +1,6 @@
+from email import header
+from tkinter import E
+from wsgiref import headers
 import mysql.connector
 import datetime
 from tabulate import tabulate
@@ -34,11 +37,22 @@ phoneno varchar(11) UNIQUE,\
 mname varchar(50) NOT NULL,\
 maddress varchar(60));"
 cursor.execute(query)
+query="create table if not exists borrowhis \
+     (borrowid varchar(6) PRIMARY KEY, \
+     memid varchar(6), \
+     mname varchar(50), \
+     bookid varchar(6), \
+     bookname varchar(44), \
+     doi date, \
+     dor date \
+     );"
+cursor.execute(query)
+
 
 # mainmenu__________________________________________________________________________________________________________  
 def MainMenu():    
-     l = [(1,"Add Books",8,"Add Members"),(2,"Search & Update Book Detail",9,"Display all members"),(3,"Display all books",10,"Delete Member"),(4,"Search & Delete Book"),(5,"Search & Display"),(6,"Library Stats"),(7,"EXIT")]
-     T = tabulate(l,headers=['Sno.','LIBRARY MANAGEMENT MAIN MENU','Sno.','Member functions'], tablefmt='fancy_grid')
+     l = [(1,"Add Books",8,"Add Members",11,"Borrow a book"),(2,"Search & Update Book Detail",9,"Display all members",12,"Display Borrow history"),(3,"Display all books",10,"Delete Member",13,"Return a Books"),(4,"Search & Delete Book",'-','-',14,"Borrow history stats"),(5,"Search & Display Books"),(6,"Library Stats"),(7,"EXIT")]
+     T = tabulate(l,headers=['Sno.','LIBRARY MANAGEMENT MAIN MENU','Sno.','Member functions','Sno.','Borrow functions'], tablefmt='fancy_grid')
      print(T)
      choice = int(input("write the corresponding Sno. for function you want to do : "))
      if choice == 1:
@@ -57,19 +71,171 @@ def MainMenu():
           closecon()
      elif choice == 8:
           addmembers()
+          ldmenu()
      elif choice == 9:
           displaymembers()
      elif choice == 10:
           deletemember()
+     elif choice == 11:
+          borrowbook()
+          ldmenu()
+     elif choice == 12:
+          displayborrow()
+     elif choice == 13:
+          returnbook()
+          ldmenu()
+     elif choice == 14:
+          borrowhistats()
      elif choice == 20:
           print(midgen())
           print(boidgen())
-
+          print(boridgen())
+          print(getname('m2'))
+          print(borrowbooksrch())
           
 #closing connection____________________________________________________________________________
 def closecon():
      datcon.close()
      print("Connection closed")
+
+def borrowhistats():
+     l=[(1,'Display non returned borrow history'),(2,'Display borrow count grouped by each member'),(3,'Display Borrow history of a member')]
+     print(tabulate(l,headers=['sno.','Stats to display'],tablefmt='simple'))
+     I=int(input("\nEnter the choice to display : "))
+     if I==1:
+          query="select * from borrowhis where dor='0000-0-0'"
+          cursor.execute(query)
+          data=cursor.fetchall()
+          headb=['BorrowID','MemberID','Member Name','BookID','Book name','DateofIssue','DateofReturn']
+          print(tabulate(data,headers=headb,tablefmt='psql'))
+          ldmenu()
+     elif I==2:
+          query="select memid,mname,count(*) from borrowhis group by mname order by memid"
+          cursor.execute(query)
+          data=cursor.fetchall()
+          head1=['MemberID','Member Name','Borrow count']
+          print(tabulate(data,headers=head1,tablefmt='psql'))
+          ldmenu()
+     elif I==3:
+          mid=input("Enter the memberID to search borrow history")
+          query="select * from borrowhis where memid='{}'"
+          cursor.execute(query.format(mid))
+          data=cursor.fetchall()
+          headb=['BorrowID','MemberID','Member Name','BookID','Book name','DateofIssue','DateofReturn']
+          print(tabulate(data,headers=headb,tablefmt='psql'))
+          ldmenu()
+
+
+#returing a book _____________________________________________________________________________
+def returnbook():
+     l=[("1.BorrowID","2.MemberID")]
+     print(tabulate(l,tablefmt='simple'))
+     I = int(input("enter the no. to search in borrow history : "))
+     if I==1:
+          borid=input("Enter The borrowID : ")
+          query="select * from borrowhis where borrowid='{}'"
+          cursor.execute(query.format(borid))
+     elif I==2:
+          membid=input("Enter the memberID : ")
+          query="select * from borrowhis where membid='{}'"
+          cursor.execute(query.format(membid))
+     data=cursor.fetchall()
+     if data==[]:
+          print("no records found !")
+          return
+     headb=['BorrowID','MemberID','Member Name','BookID','Book name','DateofIssue','DateofReturn']
+     print(tabulate(data,headers=headb,tablefmt='psql'))
+     borid=input("please enter BorrowID again : ")
+     query="update borrowhis set dor=curdate() where borrowid='{}'"
+     cursor.execute(query.format(borid))
+     datcon.commit()
+     print("Book return data updated in borrow history successfully")
+     return
+
+
+#Borrowing a book______________________________________________________________________________
+def borrowbook():
+     try:
+          borid=boridgen()
+          phno=input("Please enter your phone number : ")
+          memid=checkmember(phno)
+          if memid==None:
+               print("Please try borrowing again --")
+               return
+          mname=getname(memid)
+          lst=borrowbooksrch()
+          if lst==None:
+               return
+          bookid=lst[0]
+          boname=lst[1]
+          query="insert into borrowhis values('{}','{}','{}','{}','{}',curdate(),'{}');"
+          cursor.execute(query.format(borid,memid,mname,bookid,boname,'0000-0-0'))
+          datcon.commit()
+          print("Borrow History Added Successfully !")
+          return
+
+     except Exception as e:
+          print(e)
+          print("some problem occured !")
+          print("please make sure to enter details properly ")
+          return
+
+
+#checks member existence _____________________________________________________________________
+def checkmember(phno):
+     query="select memid from memberlist where phoneno='{}'"
+     cursor.execute(query.format(phno))
+     data = cursor.fetchall()
+     if data==[]:
+          print("Looks like you are not aldready a member!")
+          print("Please enter all the details so that we can add you as a member")
+          addmembers()
+          return
+     else:
+          memid=data[0][0]
+          return memid
+def getname(memid):#___________________________________________________________________________
+     query="select mname from memberlist where memid='{}'"
+     cursor.execute(query.format(memid))
+     data=cursor.fetchall()
+     mname=data[0][0]
+     return mname
+
+
+#searching book feature for borrow function____________________________________________________
+def borrowbooksrch():
+     bname=input("Enter the book name (or first few letters) of the book to borrow : ")
+     query="select * from booklist where bookname like '{}'"
+     bnames=bname+'%'
+     cursor.execute(query.format(bnames))
+     data = cursor.fetchall()
+     if data==[]:
+          print("There are no books of that name !")
+          return
+     else:
+          head=['BookID','Book Name','Author','Publisher','Edition','Cost','Category']
+          print(tabulate(data,headers=head,tablefmt='psql'))
+          boid=input("Enter the bookID to borrow : ")
+          query="select bookid,bookname from booklist where bookid='{}'"
+          cursor.execute(query.format(boid))
+          data2=cursor.fetchall()
+          if data2==[]:
+               print("Please Enter bookid properly\n press enter --")
+               input("")
+               return
+          else:
+               retlist=['boid','bname']
+               retlist[0]=data2[0][0]
+               retlist[1]=data2[0][1]
+               return retlist
+
+#Display borrow history________________________________________________________________________
+def displayborrow():
+     query="select * from borrowhis"
+     cursor.execute(query)
+     data=cursor.fetchall()
+     print(tabulate(data,headers=['BorrowID','MemberID','Member Name','BookID','Book name','DateofIssue','DateofReturn'],tablefmt='psql'))
+     ldmenu()
 
 #Adding Members________________________________________________________________________________
 def addmembers():
@@ -82,13 +248,14 @@ def addmembers():
           cursor.execute(query.format(mid,mphone,mname,addr))
           datcon.commit()
           print("member added successfully !")
-          ldmenu()
+          return
 
      except Exception as e:
           #print(e)
           print("some problem occured !") 
           print("please make sure to enter details properly ")
-          ldmenu()
+          return
+
 
 # Diplay all members__________________________________________________________________________
 def displaymembers():
@@ -103,6 +270,7 @@ def displaymembers():
           T=tabulate(data,headers=headm,tablefmt='psql')
           print(T)
           ldmenu()
+
 
 #Delete Member________________________________________________________________________________
 def deletemember():
@@ -146,7 +314,8 @@ def deletemember():
           deletememberid(mid)
           ldmenu()
 
-#for deletemember
+
+#for deletemember_____________________________________________________________________________
 def deletememberid(id):
      query="select * from memberlist where memid='{}'"
      cursor.execute(query.format(id))
@@ -174,7 +343,20 @@ def midgen():
      lidint=int(lid)
      lastboid="m"+str(lidint+1)
      return lastboid
-
+# returns unique borrow id_____________________________________________________________________
+def boridgen():
+     query="select * from borrowhis order by borrowid desc limit 1"
+     cursor.execute(query)
+     data=cursor.fetchall()
+     if data==[]:
+          return "B1"
+     lastid=data[0][0]
+     lid=""
+     for i in range(1,len(lastid)):
+          lid=lid+lastid[i]
+     lidint=int(lid)
+     lastboid="B"+str(lidint+1)
+     return lastboid
 #adding books__________________________________________________________________________________     
 def addbooks(): 
      try:
@@ -231,7 +413,7 @@ def displaybooks(): # funtion to display all books
 #display library stats______________________________________________________________________________
 def libstats():
      l=[(1,'Total no. of books in library'),(2,'Number of books in each Category'),(3,'Number of books of each Publisher'),(4,'Number of books of an Author')]
-     print(tabulate(l,headers=['Sno.','Stats to display'],tablefmt='github'))
+     print(tabulate(l,headers=['Sno.','Stats to display'],tablefmt='simple'))
      I=int(input("Enter the sno. for stats to see : "))
      if I==1:
           query="select count(*) as 'Number of books in library' from booklist"
@@ -522,5 +704,5 @@ def ldmenu():
 
      
 #main______________________________
-MainMenu()
 
+MainMenu()
