@@ -82,7 +82,7 @@ def MainMenu():
           ldmenu()
      elif choice == 13:
           displayborrow()
-     elif choice == 13:
+     elif choice == 14:
           returnbook()
           ldmenu()
      elif choice == 15:
@@ -192,7 +192,7 @@ def returnbook():
           cursor.execute(query.format(borid))
      elif I==2:
           membid=input("Enter the memberID : ")
-          query="select * from borrowhis where membid='{}'"
+          query="select * from borrowhis where memid='{}'"
           cursor.execute(query.format(membid))
      data=cursor.fetchall()
      if data==[]:
