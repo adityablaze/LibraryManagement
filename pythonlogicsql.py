@@ -173,11 +173,7 @@ def borrowhistats():
           print(tabulate(data,headers=head1,tablefmt='psql'))
           ldmenu()
      elif I==3:
-          mid=input("Enter the memberID to search borrow history")
-          query="select * from borrowhis where memid='{}'"
-          cursor.execute(query.format(mid))
-          data=cursor.fetchall()
-          print(tabulate(data,headers=headb,tablefmt='psql'))
+          borhofmember()
           ldmenu()
 
 
