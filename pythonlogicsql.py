@@ -463,7 +463,7 @@ def displaybooks(): # funtion to display all books
 
 #display library stats______________________________________________________________________________
 def libstats():
-     l=[(1,'Total no. of books in library'),(2,'Number of books in each Category'),(3,'Number of books of each Publisher'),(4,'Number of books of an Author')]
+     l=[(1,'Total no. of books in library'),(2,'Number of books in each Category'),(3,'Number of books of each Publisher'),(4,'Number of books of an Author'),(5,'Total cost of books')]
      print(tabulate(l,headers=['Sno.','Stats to display'],tablefmt='simple'))
      I=int(input("Enter the sno. for stats to see : "))
      if I==1:
@@ -504,6 +504,17 @@ def libstats():
           cursor.execute(query)
           data=cursor.fetchall()
           T = tabulate(data,headers=['Author','No. of books'],tablefmt='psql')
+          print(T)
+          ch=input("Do you want to check more stats (y/n) : ")
+          if ch in 'Yy':
+               libstats()
+          else:
+               ldmenu()
+     elif I==5:
+          query="select count(*),sum(cost) from booklist"
+          cursor.execute(query)
+          data=cursor.fetchall()
+          T=tabulate(data,headers=['No. of books','Total Cost of all books'],tablefmt='psql')
           print(T)
           ch=input("Do you want to check more stats (y/n) : ")
           if ch in 'Yy':
