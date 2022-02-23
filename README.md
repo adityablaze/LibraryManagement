@@ -1,4 +1,4 @@
-# LibraryManagement
+## LibraryManagement
 Library Management using python and mysql
 
 To use this on your PC you have to install mysql server 8.0 
