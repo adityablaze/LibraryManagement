@@ -1,7 +1,7 @@
 ## LibraryManagement
 
 This repositoy contains mainly just one python file which can be directly executed and everything is setup automatically.
-This is just a small project which has features to manage a library 
+This is just a small project which has features to manage a library.
 
 ## Installation Instructions
 * **Install Python 3.x** - First you have to install a version of python (3.x) from the [official website](https://www.python.org/downloads/).
