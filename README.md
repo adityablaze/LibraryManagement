@@ -4,4 +4,4 @@ This repositoy contains mainly just one python file which can be directly execut
 This is just a small project which has features to manage a library 
 
 ## Installation Instructions
-* **Install Python 3.x** - First you have to install a version of python (3.x) from the [official website]
+* **Install Python 3.x** - First you have to install a version of python (3.x) from the [official website](https://www.python.org/downloads/)
