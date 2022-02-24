@@ -456,6 +456,7 @@ def displaybooks(): # funtion to display all books
      data = cursor.fetchall()
      if data==[]:
           print("There are currently no books")
+          ldmenu()
      else:
           print(tabulate(data,headers=head,tablefmt='psql'))
           ldmenu()
